@@ -68,9 +68,9 @@ class PlayWorkout: UIScrollView{
         
          let widthConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0);
         
-        let heightConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: CGFloat(heightsTotal + (self.workoutInstructionTiles.count * 10)));
+        let bottomConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: CGFloat(heightsTotal + (self.workoutInstructionTiles.count * 10)));
         
-        self.addConstraints([verticalConstraint, leftConstraint, widthConstraint, heightConstraint]);
+        self.addConstraints([verticalConstraint, leftConstraint, widthConstraint, bottomConstraint]);
     }
     
     
@@ -85,8 +85,10 @@ class PlayWorkout: UIScrollView{
         
         let heightConstraint = NSLayoutConstraint(item: self, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: superView, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: -120);
         
+        let bottomConstraint = NSLayoutConstraint(item: self, attribute: NSLayoutAttribute.Bottom, relatedBy: .Equal, toItem: superView, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: -60);
         
-        superView.addConstraints([verticalConstraint, leftConstraint, heightConstraint, rightConstraint]);
+        
+        superView.addConstraints([verticalConstraint, leftConstraint, bottomConstraint,/* heightConstraint,*/ rightConstraint]);
         
     }
     
