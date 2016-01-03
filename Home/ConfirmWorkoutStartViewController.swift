@@ -39,6 +39,8 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     let topBorder  = CALayer();
     
     var workoutStarted = false;
+    var scrollOffset : CGPoint?;
+    var bottomMenuVisible = true;
     
     var deviceOrientation : String = ""; //This variable will track how the device is laid out
     
@@ -82,16 +84,19 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         {
             if(deviceOrientation == "portrait"){
                 removeTablePrep();
+                bottomMenuVisible = true;
             }
             deviceOrientation = "landscape";
         } else{
             
             if(deviceOrientation == "landscape"){
                 removeTablePrep();
+                bottomMenuVisible = true;
             }
             deviceOrientation = "portrait";
         }
         
+
         
 //        if(workoutConfig != nil){
 //            
@@ -217,8 +222,8 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     
     func setupBottomBar(){
         
-        
         var iconMap : Array<NSMutableDictionary>! = Array<NSMutableDictionary>();
+        bottomNav.removeFromSuperview();
         bottomNav = UIView();
         
         let frameWidth = self.view.bounds.size.width;
@@ -418,12 +423,12 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         
         parseWorkoutInstructions();
         print("count subviews \(workoutInstructions.count)");
-        workoutConfig = PlayWorkout(workoutSubviews : workoutInstructions);
-        
+        workoutConfig = PlayWorkout(workoutSubviews : workoutInstructions, viewController : self);
+        workoutConfig!.delegate = self;
         //workoutConfig!.backgroundColor = UIColor.greenColor();
         
         self.contentView.addSubview(workoutConfig!);
-        
+        workoutConfig!.constrainContentViewToSuper();
         workoutConfig!.setViewConstraints(self.contentView);
         //workoutConfig!.layoutIfNeeded();
         
@@ -450,6 +455,45 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         self.menuShouldSlide = true;
     }
 
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        self.scrollOffset = workoutConfig!.contentOffset;
+    }
+
+    func scrollViewDidScroll(scrollView: UIScrollView){
+        
+        if (scrollView.contentOffset.y < self.scrollOffset!.y) {
+            //scroll view is moving upwards (Y offset value is decreasing)
+            if(!self.bottomMenuVisible){
+                self.bottomMenuVisible = !self.bottomMenuVisible;
+                UIView.animateWithDuration(0.3, animations: {() -> Void in
+                    
+                    self.bottomNav.center.y -= self.bottomNav.bounds.size.height;
+                    
+                }, completion: {(finished : Bool) in
+                        
+                    
+                });
+                
+            }
+            
+        } else if (scrollView.contentOffset.y > self.scrollOffset!.y) {
+            //scroll view is moving downwards (Y offset value is increasing)
+            
+            if(self.bottomMenuVisible){
+                self.bottomMenuVisible = !self.bottomMenuVisible;
+                UIView.animateWithDuration(0.3, animations: {() -> Void in
+                    
+                    self.bottomNav.center.y += self.bottomNav.bounds.size.height;
+                    
+                    }, completion: {(finished : Bool) in
+                        
+                        
+                });
+                
+            }
+            
+        }
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

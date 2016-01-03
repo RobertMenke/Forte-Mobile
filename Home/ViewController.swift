@@ -193,7 +193,7 @@ This will be the functional part of the class, end of ui setup
                     print("login response \(key) and \(value)");
                     response.setValue(value, forKey: key as! String)
                 }
-                response.setValue(0, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
+                response.setValue(2, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
                 self.confirmWorkout.loginDetails = response;
                 self.userDefaults.setObject(jsonDict, forKey: "userDetails");
 
