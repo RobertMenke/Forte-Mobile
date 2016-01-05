@@ -11,15 +11,15 @@ import UIKit
 class ViewController: UIViewController {
 
     
-    let screenSize = UIScreen.mainScreen().bounds;
-    var logo : UILabel! = UILabel()
-    var emailLabel : UILabel! = UILabel()
-    var emailInput : UITextField! = UITextField()
-    var pwLabel : UILabel! = UILabel();
-    var pwInput : UITextField! = UITextField()
-    var loginButton : UIButton! = UIButton();
-    var userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults(); //Store system information in a variable
-    var confirmWorkout = ConfirmWorkoutStartViewController();
+    let screenSize                                              = UIScreen.mainScreen().bounds;
+    var logo            : UILabel!                              = UILabel()
+    var emailLabel      : UILabel!                              = UILabel()
+    var emailInput      : UITextField!                          = UITextField()
+    var pwLabel         : UILabel!                              = UILabel();
+    var pwInput         : UITextField!                          = UITextField()
+    var loginButton     : UIButton!                             = UIButton();
+    var userDefaults    : NSUserDefaults                        = NSUserDefaults.standardUserDefaults(); //Store system information in a variable
+    var confirmWorkout  : ConfirmWorkoutStartViewController     = ConfirmWorkoutStartViewController();
     
     
 /**
@@ -193,7 +193,7 @@ This will be the functional part of the class, end of ui setup
                     print("login response \(key) and \(value)");
                     response.setValue(value, forKey: key as! String)
                 }
-                response.setValue(2, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
+                response.setValue(1, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
                 self.confirmWorkout.loginDetails = response;
                 self.userDefaults.setObject(jsonDict, forKey: "userDetails");
 

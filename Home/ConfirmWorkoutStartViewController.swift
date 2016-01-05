@@ -21,6 +21,7 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     var actualWorkoutLabel  : UILabel            = UILabel();
     var navController       : UINavigationBar    = UINavigationBar();
     var bottomNav           : UIView             = UIView();
+    var calDate             : UIView             = UIView();
     var todayView           : TodaysWorkout!
     var workoutConfig       : PlayWorkout?
     var workoutInstructions : [WorkoutInstruction] = [WorkoutInstruction]()
@@ -43,6 +44,22 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     var bottomMenuVisible = true;
     
     var deviceOrientation : String = ""; //This variable will track how the device is laid out
+    
+    
+    let monthAbbr = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ];
     
     override func viewDidLoad() {
         
@@ -96,19 +113,6 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
             deviceOrientation = "portrait";
         }
         
-
-        
-//        if(workoutConfig != nil){
-//            
-//            workoutConfig!.contentSize.height = CGFloat(workoutConfig!.heightsTotal + (workoutConfig!.workoutInstructionTiles.count * 10));
-//            workoutConfig!.contentSize.width  = CGFloat(self.view.bounds.size.width - 20);
-//            
-//            for view in workoutConfig!.subviews{
-//                if view is UIScrollView{
-//                    workoutConfig?.changeContentSize(view as! UIScrollView)
-//                }
-//            }
-//        }
     }
     
     
@@ -118,7 +122,7 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         for (index , subJson) : (String, JSON) in self.justInstructions!{
             
             //print("parsing \(subJson) and \(index)");
-            workoutInstructions.append(WorkoutInstruction(instruction: subJson));
+            workoutInstructions.append(WorkoutInstruction(instruction: subJson, viewController : self, workoutDayId : self.todaysWorkout!["workoutDay"]["background"]["workoutDayId"].intValue));
         }
     }
     
@@ -342,17 +346,118 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     func centeredLabel(element : AnyObject, relativeTo : AnyObject,  height : CGFloat,verticalSeparation : CGFloat, left: CGFloat, right: CGFloat) -> Void{
         
         
-        let leftConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.LeadingMargin, multiplier: 1.0, constant: left);
+        let leftConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Leading, multiplier: 1.0, constant: left);
         
-        let rightConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.TrailingMargin, multiplier: 1.0, constant: right);
+        let rightConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: right);
         
-        let topConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: relativeTo, attribute: NSLayoutAttribute.TopMargin, multiplier: 1.0, constant: verticalSeparation)
+        let topConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: relativeTo, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: verticalSeparation)
         
         let heightConstraint = NSLayoutConstraint(item: element, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: height);
         
-        view.addConstraints([leftConstraint, rightConstraint, topConstraint, heightConstraint]);
+        self.view.addConstraints([leftConstraint, rightConstraint, topConstraint, heightConstraint]);
+    }
+    
+    /**
+     Goal of this method is to imitate a relatively positioned element is css... sigh
+    */
+    func relativePosition(child : UIView, parent : UIView, left : CGFloat, right : CGFloat, top : CGFloat, height : CGFloat, width : CGFloat){
+        
+        
+        let leftConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Leading, multiplier: 1.0, constant: left);
+        
+        let rightConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: right);
+        
+        let topConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: top)
+        
+        let heightConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: height);
+        
+        let widthConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: width);
+        
+        parent.addConstraints([leftConstraint, rightConstraint, topConstraint, heightConstraint, widthConstraint]);
+        
+    }
+    
+    func relativeCenterToView(child : UIView, parent : UIView, height : CGFloat, width : CGFloat){
+        
+        let leftConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Leading, multiplier: 1.0, constant: 0);
+        
+        let rightConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: 0);
+        
+        let topConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0)
+        
+        let heightConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: height);
+        
+        let widthConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: width);
+        
+        parent.addConstraints([leftConstraint, rightConstraint, topConstraint, heightConstraint/*, widthConstraint*/]);
     }
 
+    func createCalendarDateView(aDate : NSDate) -> UIView{
+        
+        calDate = UIView(frame : CGRect(x: self.view.bounds.size.width - 60, y: 10, width: 35, height: 35));
+        
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Day , .Month , .Year], fromDate: aDate)
+        
+        let year =  components.year
+        let month = components.month
+        let day = components.day
+        
+        
+        //Views for part that would read "Dec"
+        let topCal      = UIView();
+        topCal.backgroundColor = UIColor(red: 178/255, green: 67/255, blue: 69/255, alpha: 1.0);
+        topCal.translatesAutoresizingMaskIntoConstraints        = false;
+        let topText     = UILabel();
+        topText.translatesAutoresizingMaskIntoConstraints       = false;
+        topText.text    = self.monthAbbr[month - 1];
+        topText.textAlignment = .Center;
+        topText.textColor = UIColor.whiteColor();
+        topCal.addSubview(topText);
+        relativeCenterToView(topText, parent: topCal, height: 15, width: 30);
+        
+        //View for part that would read "17"
+        let bottomCal   = UIView();
+        bottomCal.backgroundColor = UIColor(red: 236/255, green: 239/255, blue: 241/255, alpha: 1.0);
+        bottomCal.translatesAutoresizingMaskIntoConstraints     = false;
+        let bottomText  = UILabel();
+        bottomText.translatesAutoresizingMaskIntoConstraints    = false;
+        bottomText.text = String(day);
+        bottomText.textAlignment = .Center;
+        bottomCal.addSubview(bottomText);
+        relativeCenterToView(bottomText, parent: bottomCal, height: 15, width: 30);
+      
+        //calDate.translatesAutoresizingMaskIntoConstraints       = false;
+        
+        halfSuper(topCal, parent : calDate, isTop : true);
+        halfSuper(bottomCal, parent : calDate, isTop : false);
+
+        return calDate;
+    }
+    
+    
+    func halfSuper(child : UIView, parent : UIView, isTop : Bool){
+        
+        parent.addSubview(child);
+        var verticalConstraint : NSLayoutConstraint!;
+        if(isTop){
+
+            verticalConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: 0);
+            
+        } else{
+            
+            verticalConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: CGFloat(parent.bounds.size.height / 2));
+        }
+        
+        let heightConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: CGFloat(parent.bounds.size.height / 2 * -1));
+        //CGFloat(parent.bounds.size.height / 2 * -1)
+        
+        let leftConstraint = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: 0);
+        
+        let width = NSLayoutConstraint(item: child, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: parent, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0);
+        
+        parent.addConstraints([verticalConstraint, heightConstraint, leftConstraint, width]);
+    }
     
     
     func menuPressed(sender: AnyObject){
@@ -422,15 +527,22 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     func startWorkout(sender : UITapGestureRecognizer){
         
         parseWorkoutInstructions();
-        print("count subviews \(workoutInstructions.count)");
+        
+        let newTitle = UINavigationItem();
+        newTitle.title = todayView.todaysTitle;
+        navController.topItem!.title = todayView.todaysTitle;
+        let date : NSDate = getCalendarDate(todaysWorkout!["workoutDay"]["background"]["date"].string!);
+        //let rightItem     = UIBarButtonItem(customView: createCalendarDateView(date));
+        navController.topItem!.rightBarButtonItem = UIBarButtonItem(customView: createCalendarDateView(date));
+        
+
         workoutConfig = PlayWorkout(workoutSubviews : workoutInstructions, viewController : self);
         workoutConfig!.delegate = self;
-        //workoutConfig!.backgroundColor = UIColor.greenColor();
         
         self.contentView.addSubview(workoutConfig!);
         workoutConfig!.constrainContentViewToSuper();
         workoutConfig!.setViewConstraints(self.contentView);
-        //workoutConfig!.layoutIfNeeded();
+
         
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseIn, animations: {() in
             
@@ -443,6 +555,15 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
             
             self.todayView.removeFromSuperview();
         })
+    }
+    
+    func getCalendarDate(dateString : String) -> NSDate{
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.dateFromString(dateString) as NSDate!
+        createCalendarDateView(date);
+        return date;
     }
     
     internal func removeTablePrep(){

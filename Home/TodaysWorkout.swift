@@ -14,6 +14,8 @@ class TodaysWorkout: UIView {
     
     var startButton : UIButton?
     
+    var todaysTitle : String?;
+    
     init(workoutDay : JSON){
         
         super.init(frame: CGRect.zero);
@@ -37,9 +39,11 @@ class TodaysWorkout: UIView {
             if(boolTest.characters.count == 0){
                 
                 todaysWorkoutText.text = "Rest Day";
+                todaysTitle = "Rest Day";
             } else{
             
                 todaysWorkoutText.text = self.todaysWorkout!["workoutDay"]["background"]["name"].string
+                todaysTitle = self.todaysWorkout!["workoutDay"]["background"]["name"].string
                 setupButton()
             
             }

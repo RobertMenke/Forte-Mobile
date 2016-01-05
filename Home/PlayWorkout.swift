@@ -17,6 +17,8 @@ class PlayWorkout: UIScrollView{
     
     var viewController : ConfirmWorkoutStartViewController!;
     var subScrollView = UIView();
+    
+    let rowHeight : CGFloat = CGFloat(35);
 
     init(workoutSubviews : [WorkoutInstruction], viewController : ConfirmWorkoutStartViewController){
         
@@ -52,8 +54,8 @@ class PlayWorkout: UIScrollView{
             //print("height total \(heightsTotal) and set count \(setCount)");
             //Formula for position relative to top of the ScrollView will be 10 (margin) + 20 (label space) + setCount * 20 (content) + heightsTotal
             let setCount        = workoutInstructionTiles[i].getNumSets();
-            let topAttr         = CGFloat(30  + heightsTotal);
-            let heightAttr      = CGFloat(setCount * 30 + 30);
+            let topAttr         = CGFloat(50  + heightsTotal);
+            let heightAttr      = CGFloat(setCount) * rowHeight + rowHeight + 50;
             
             let verticalConstraint = NSLayoutConstraint(item: workoutInstructionTiles[i], attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: subScrollView, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: topAttr);
             
@@ -63,12 +65,12 @@ class PlayWorkout: UIScrollView{
             
             let heightConstraint = NSLayoutConstraint(item: workoutInstructionTiles[i], attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: heightAttr);
             
-            let bottomConstraint = NSLayoutConstraint(item: workoutInstructionTiles[i], attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: subScrollView, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: topAttr + heightAttr - 30);
+            //let bottomConstraint = NSLayoutConstraint(item: workoutInstructionTiles[i], attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: subScrollView, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: topAttr + heightAttr - rowHeight);
             
             
             subScrollView.addConstraints([verticalConstraint, leftConstraint, widthConstraint, heightConstraint/*,bottomConstraint*/]);
             
-            heightsTotal += setCount * 30 + 40;
+            heightsTotal += Int(heightAttr) + 10;
         }
         
         self.addSubview(subScrollView);
@@ -132,7 +134,8 @@ class PlayWorkout: UIScrollView{
         let widthConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self.viewController.contentView, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0);
         
         
-        let heightConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: CGFloat(heightsTotal + (self.workoutInstructionTiles.count * 10)));
+        //(added 20 for a little extra spacing at the bottom)
+        let heightConstraint = NSLayoutConstraint(item: subScrollView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: CGFloat(heightsTotal + (self.workoutInstructionTiles.count * 10) + Int(rowHeight)));
         
         
         self.viewController.contentView.addConstraints([heightConstraint, widthConstraint]);
@@ -141,7 +144,7 @@ class PlayWorkout: UIScrollView{
     
     func changeContentSize(aView : UIScrollView){
         
-        aView.contentSize.height = CGFloat(aView.subviews.count * 30);
+        aView.contentSize.height = CGFloat(aView.subviews.count) * rowHeight + rowHeight;
         aView.contentSize.width  = CGFloat(self.bounds.size.width);
     }
 
