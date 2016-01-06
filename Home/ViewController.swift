@@ -193,14 +193,15 @@ This will be the functional part of the class, end of ui setup
                     print("login response \(key) and \(value)");
                     response.setValue(value, forKey: key as! String)
                 }
-                response.setValue(1, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
+                response.setValue(0, forKey: "dateInteger"); //set a starting date integer to query workouts if any exist
                 self.confirmWorkout.loginDetails = response;
-                self.userDefaults.setObject(jsonDict, forKey: "userDetails");
+                self.userDefaults.setValue(response, forKey: "userDetails");
 
                 let jsonForCall = NSMutableDictionary();
                 
                 jsonForCall.setValue(response.valueForKey("userID"), forKey: "userId");
                 jsonForCall.setValue(response.valueForKey("dateInteger"), forKey: "dateInteger");
+                
                 self.getActualsData(jsonForCall);
                 self.getWorkoutData(jsonForCall);
             });
@@ -250,6 +251,7 @@ This will be the functional part of the class, end of ui setup
         do{
             try requester.workoutDayRequest({(jsonDict) in
                 
+                print("im a json", jsonDict);
                 self.confirmWorkout.todaysActuals = jsonDict;
                 self.userDefaults.setObject(jsonDict.string, forKey: "todaysActuals");
                 

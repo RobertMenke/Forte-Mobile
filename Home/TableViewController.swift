@@ -154,7 +154,8 @@ class TableViewController: UITableViewController {
      */
     func goToTodaysWorkout(sender: AnyObject){
         
-        self.primaryViewController.loginDetails  = self.userDefaults.objectForKey("userDetails")   as! NSMutableDictionary;
+        //print("dat object do \(userDefaults.objectForKey("userDetails")!)");
+        self.primaryViewController.loginDetails  = self.userDefaults.objectForKey("userDetails")!   as! NSMutableDictionary;
         
         //If we've deconstructed the main object for some reason and today's workout has been set to nil, get the data from
         //the os

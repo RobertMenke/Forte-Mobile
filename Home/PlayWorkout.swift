@@ -30,9 +30,9 @@ class PlayWorkout: UIScrollView{
         self.clipsToBounds                              = true;
         
         appendTiles();
-        
-        
     }
+    
+    
 
     
     func appendTiles(){

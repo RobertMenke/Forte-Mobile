@@ -29,6 +29,7 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
     var todaysWorkout       : JSON?;
     var todaysActuals       : JSON?;
     var justInstructions    : JSON?;
+    var justActuals         : JSON?;
     var loginDetails        : NSMutableDictionary!;
     
     var userDetails     = Dictionary<String, String>();
@@ -69,6 +70,7 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         contentView = UIView();
         self.view.addSubview(contentView);
         todaysWorkoutViewSetup()
+        slideOutMenu = TableViewController(primaryViewController: self);
         
         if(UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation)){
             deviceOrientation = "landscape"
@@ -84,6 +86,9 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         
         if(self.todaysWorkout != nil){
             self.justInstructions = self.todaysWorkout!["workoutDay"]["instructions"];
+        }
+        if(self.todaysActuals != nil){
+            self.justActuals = self.todaysActuals!["workoutDayActuals"]["instructions"];
         }
 
     }
@@ -115,14 +120,29 @@ class ConfirmWorkoutStartViewController: UIViewController, UIScrollViewDelegate 
         
     }
     
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
+    }
+    
+    override func shouldAutorotate() -> Bool {
+        return true
+    }
     
     func parseWorkoutInstructions(){
+        
+        var tempActuals = [JSON]();
+        for (index , subJson) : (String, JSON) in self.justActuals!{
+         
+            tempActuals +=  [subJson];
+        }
         
         workoutInstructions = [WorkoutInstruction]()
         for (index , subJson) : (String, JSON) in self.justInstructions!{
             
-            //print("parsing \(subJson) and \(index)");
-            workoutInstructions.append(WorkoutInstruction(instruction: subJson, viewController : self, workoutDayId : self.todaysWorkout!["workoutDay"]["background"]["workoutDayId"].intValue));
+            let i = Int(index)!
+            print("\(index) todays actual instruction \(tempActuals[i])");
+            
+            workoutInstructions.append(WorkoutInstruction(instruction: subJson, actuals : tempActuals[i], viewController : self, workoutDayId : self.todaysWorkout!["workoutDay"]["background"]["workoutDayId"].intValue));
         }
     }
     

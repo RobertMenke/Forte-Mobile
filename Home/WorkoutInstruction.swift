@@ -55,12 +55,13 @@ class WorkoutInstruction: UIScrollView{
     //Constants for row height, etc
     let rowHeight : CGFloat = CGFloat(35);
     
-    init(instruction : JSON/*, actuals : JSON*/, viewController : ConfirmWorkoutStartViewController, workoutDayId : Int){
+    init(instruction : JSON, actuals : JSON, viewController : ConfirmWorkoutStartViewController, workoutDayId : Int){
         
         super.init(frame: CGRect.zero);
         
-        self.instructionJson = instruction;
-        //self.actualsJson     = actuals; will take care of this later**
+        //self.instructionJson = instruction;
+        self.instructionJson = actuals["0"].count > 0 ? actuals : instruction; //If an actuals value exists, use that
+        self.actualsJson     = actuals;
         self.viewController  = viewController;
         self.instructionId   = Int(self.instructionJson!["instructionId"].string!);
         self.workoutId       = Int(self.instructionJson!["wId"].string!);
