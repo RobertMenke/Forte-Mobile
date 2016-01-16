@@ -182,6 +182,7 @@ This will be the functional part of the class, end of ui setup
     }
     
     func makeLoginRequest(dict: NSDictionary){
+        
         var response: NSMutableDictionary!;
         let requester = RequestData(data: dict, aUrl: "http://localhost/PtManagement/php/login_validation.php")
         do {
@@ -190,6 +191,7 @@ This will be the functional part of the class, end of ui setup
                 response = jsonDict as! NSMutableDictionary;
                 print("got here \(jsonDict.allKeys.count)");
                 for (key, value) in jsonDict{
+                    
                     print("login response \(key) and \(value)");
                     response.setValue(value, forKey: key as! String)
                 }
